@@ -16,6 +16,7 @@ def mnist_train_loader(cfg):
             download=True),
         batch_size=cfg.train.batch_size,
         shuffle=True,
+        num_workers=cfg.dataset.num_workers,
     )
 
 def mnist_test_loader(cfg):
@@ -27,4 +28,5 @@ def mnist_test_loader(cfg):
             download=True
         ),
         batch_size=cfg.train.batch_size,
+        num_workers=cfg.dataset.num_workers,
     )

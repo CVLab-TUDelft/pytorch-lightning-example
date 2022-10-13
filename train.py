@@ -26,6 +26,7 @@ class Runner(pl.LightningModule):
 
         self.train_accuracy = torchmetrics.Accuracy()
         self.val_accuracy = torchmetrics.Accuracy()
+        self.test_accuracy = torchmetrics.Accuracy()
 
     def forward(self, x):
         # Runner needs to redirect any model.forward() calls to the actual
@@ -65,6 +66,16 @@ class Runner(pl.LightningModule):
         self.log("val/acc_step", self.val_accuracy)
         return loss
 
+    def test_step(self, batch, batch_idx):
+        loss, y_hat = self._step(batch)
+        preds = torch.argmax(y_hat, dim=1)
+        self.test_accuracy(preds, batch[1])
+
+        # Log test loss
+        self.log("test/loss", loss)
+        self.log('test/acc', self.test_accuracy)
+        return loss
+
     def on_train_epoch_end(self):
         # Log the epoch-level training accuracy
         self.log('train/acc', self.train_accuracy.compute())
@@ -86,6 +97,10 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
 
+    # Seed everything. Note that this does not make training entirely
+    # deterministic.
+    pl.seed_everything(cfg.seed, workers=True)
+
     # Set cache dir to W&B logging directory
     os.environ["WANDB_CACHE_DIR"] = os.path.join(cfg.wandb.dir, 'cache')
     wandb_logger = WandbLogger(
@@ -104,10 +119,11 @@ def main():
 
     # Create datasets using factory pattern
     loaders = dataset_factory.factory(cfg)
-    train_dataset_loader = loaders['train']
-    val_dataset_loader = loaders['val']
+    train_dataset_loader, val_dataset_loader, test_dataset_loader = loaders
 
-    # Tie it all together
+    # Tie it all together with PyTorch Lightning: Runner contains the model,
+    # optimizer, loss function and metrics; Trainer executes the
+    # training/validation loops and model checkpointing.
     runner = Runner(cfg, model)
     trainer = pl.Trainer(
         max_epochs=cfg.train.epochs,
@@ -117,8 +133,12 @@ def main():
         gpus=torch.cuda.device_count(),
     )
 
-    # Train + validate
+    # Train + validate (if validation dataset is implemented)
     trainer.fit(runner, train_dataset_loader, val_dataset_loader)
+
+    # Test (if test dataset is implemented)
+    if test_dataset_loader is not None:
+        trainer.test(runner, test_dataset_loader)
 
 
 

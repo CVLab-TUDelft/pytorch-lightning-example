@@ -1,3 +1,4 @@
+seed: 0
 optimize:
   optimizer: Adam
   lr: 0.001
@@ -8,6 +9,7 @@ dataset:
   name: MNIST
   channels: 1
   root: ./data
+  num_workers: 4
 wandb:
   log: true
   dir: ./
