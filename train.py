@@ -70,7 +70,7 @@ class Runner(pl.LightningModule):
         self.log('train/acc', self.train_accuracy.compute())
         self.train_accuracy.reset()
 
-    def on_val_epoch_end(self):
+    def on_validation_epoch_end(self):
         # Log the epoch-level validation accuracy
         self.log('val/acc', self.val_accuracy.compute())
         self.val_accuracy.reset()
