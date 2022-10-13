@@ -1,0 +1,16 @@
+optimize:
+  optimizer: Adam
+  lr: 0.001
+train:
+  epochs: 100
+  batch_size: 32
+dataset:
+  name: MNIST
+  channels: 1
+  root: ./data
+wandb:
+  log: true
+  dir: ./
+  experiment_name: ''
+  entity: ''
+  project: ''
