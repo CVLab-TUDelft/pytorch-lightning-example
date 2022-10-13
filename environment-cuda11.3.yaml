@@ -1,0 +1,13 @@
+name: pytorch-lightning-example
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - omegaconf=2.2.3
+  - python=3.9
+  - pytorch
+  - cudatoolkit=11.3
+  - pytorch-lightning=1.7.7
+  - torchvision=0.13.1
+  - wandb=0.13.4
