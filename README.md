@@ -10,6 +10,22 @@ CUDA: `conda env create -f environment-cuda11.3.yml`
 
 CPU: `conda env create -f environment.yml`
 
+## Usage
+
+Use command-line arguments to override the defaults given in `config.yaml`. For example:
+
+```bash
+python train.py wandb.log=True wandb.entity=<wandb-username> wandb.project=<wandb-project> wandb.experiment_name=<name-in-wandb> dataset.name=MNIST dataset.data_dir=./data dataset.channels=1 dataset.classes=10 model.name=LeNet
+```
+
+**HPC**: to run on the HPC, copy your code to the HPC, adapt the given `run.sbatch` to your HPC settings (see the top of the file) and use it by appending the Python call to the call to the sbatch file:
+
+```bash
+sbatch --partition general --qos short --time 4:00:00 -J name-in-slurm run.sbatch python train.py wandb.log=True wandb.entity=<wandb-username> wandb.project=<wandb-project> wandb.experiment_name=<name-in-wandb> dataset.name=MNIST dataset.data_dir=./data dataset.channels=1 dataset.classes=10 model.name=LeNet
+```
+
+**GPUs**: the code will automatically detect available GPUs and attempt to use them. When multiple GPUs are used each fits `train.batch_size` samples, so the total batch size is `NUM_GPUs * train.batch_size`. Consider this when tuning your hyperparameters!
+
 ## Extending
 
 ### Adding models
