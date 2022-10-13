@@ -28,6 +28,8 @@ sbatch --partition general --qos short --time 4:00:00 -J name-in-slurm run.sbatc
 
 ## Extending
 
+*If you end up extending this code to support generally useful functionality, or widely used datasets and/or models, consider a pull request to share your code!*
+
 ### Adding models
 
 - Add the code for the model in a new file in `models`;
