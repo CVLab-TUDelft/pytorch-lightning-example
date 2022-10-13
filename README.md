@@ -56,3 +56,15 @@ filename = os.path.join(directory, 'model.ckpt')
 
 - Add flag `ckpt_path=filename` to the call to `Trainer.fit()`
 - Consider generalizing this by making `artifact_name` given by a new config key `cfg.resume.artifact`
+
+## Known issues
+
+**Warnings related to `num_workers`**
+Depending on the amount of CPU threads available you may want to adapt `cfg.dataset.num_workers` for data loading to be more efficient.
+
+**Warnings related to `sync_dist`**
+PyTorch Lightning recommends to sync logging calls. As far as I know this doesn't affect the reported accuracies, but it may slow down training, so I chose to ignore these warnings.
+
+## Questions
+
+If you have any questions about the use of this code, open an issue on the repository.
