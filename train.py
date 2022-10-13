@@ -83,6 +83,9 @@ def main():
     cfg = OmegaConf.merge(cfg, cmd_cfg)
     print(OmegaConf.to_yaml(cfg))
 
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Using device: {device}")
+
     # Set cache dir to W&B logging directory
     os.environ["WANDB_CACHE_DIR"] = os.path.join(cfg.wandb.dir, 'cache')
     wandb_logger = WandbLogger(
@@ -109,6 +112,9 @@ def main():
     trainer = pl.Trainer(
         max_epochs=cfg.train.epochs,
         logger=wandb_logger,
+        # Use DDP training by default, even for CPU training
+        strategy="ddp_find_unused_parameters_false",
+        gpus=torch.cuda.device_count(),
     )
 
     # Train + validate
